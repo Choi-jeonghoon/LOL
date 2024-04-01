@@ -1,42 +1,25 @@
-import { INestApplication } from "@nestjs/common";
-import { ApiService } from "src/services/api.service";
-import { TestingModule, Test } from '@nestjs/testing'
+import { Test, TestingModule } from '@nestjs/testing';
+import { ApiService } from '../../services/api.service';
+import { HttpModule } from '@nestjs/axios'; //외부 API를 사용 하기위해서 추가 설치했다.
 
-describe("api.service.spec", () => {
-    let app: INestApplication;
-    let service: ApiService;
+describe('ApiService', () => {
+  let service: ApiService;
 
-    beforeAll(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            imports: [],
-            providers: [ApiService],
-            controllers: [],
-            exports: []
-        }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [HttpModule],
+      providers: [ApiService],
+    }).compile();
 
-        app = module.createNestApplication();
-        service = module.get<ApiService>(ApiService);
-    });
+    service = module.get<ApiService>(ApiService);
+  });
 
-    afterAll(async () => {
-        await app.close();
-    });
+  it('should return data for success nickname', async () => {
+    const nickname = 'BT102030';
+    const data = await service.search(nickname);
+    console.log('개인정보 확인============', data);
 
-    // 이건 성공적인 케이스
-    it('it should be json data of current game', async () => {
-        const data = await service.search('테스트닉네임');
-
-        console.log(data);
-    })
-
-    // 이건 테스트 도중 예상치 못한 에러가 발생했다 가정
-    it('it should 뭐 어쩌구', async () => {
-        console.log("두번째 테스트");
-        throw new Error("고의적인 에러");
-    })
-
-    // 이건 테스트 하긴 하는데 당연히 오류가 발생해야 할 상황을 가정
-    it('it should be throw', async () => {
-        await expect(service.beError()).rejects.toThrow();
-    })
+    expect(data).toBeDefined();
+    expect(data).toHaveProperty('name', '비에고의 품격');
+  });
 });
