@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiService } from '../../services/api.service';
 import { HttpModule } from '@nestjs/axios'; //외부 API를 사용 하기위해서 추가 설치했다.
-import { CustomError } from 'src/middlewares/CustomError';
 
 describe('ApiService', () => {
   let service: ApiService;
