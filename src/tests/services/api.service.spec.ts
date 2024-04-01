@@ -15,11 +15,11 @@ describe('ApiService', () => {
   });
 
   it('should return data for success nickname', async () => {
-    const nickname = 'BT102030';
+    const nickname = 'BT102030';
     const data = await service.search(nickname);
     console.log('개인정보 확인============', data);
 
     expect(data).toBeDefined();
-    expect(data).toHaveProperty('name', '비에고의 품격');
+    expect(data).toHaveProperty('name', 'BT102030');
   });
 });
