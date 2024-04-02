@@ -33,9 +33,7 @@ export class ApiService {
       console.log("가공되서온 puuid 값", processedData.puuid);
 
       // 매치 ID를 가져오는 URL 구성
-      const matchIdUrl = `${this.riotMatchUrl.replace('{puuid}', processedData.puuid)}/ids?start=0&count=20`;
-
-
+      const matchIdUrl = `${this.riotMatchUrl.replace('{puuid}', processedData.puuid)}&start=0&count=20`;
 
       console.log("매치 ID를 가져오는 URL", matchIdUrl);
 

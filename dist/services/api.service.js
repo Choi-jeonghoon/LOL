@@ -32,7 +32,7 @@ let ApiService = class ApiService {
             const processedData = await this.processService.infoProcess(infoData.data);
             console.log("가공되서온 ID 값", processedData.id);
             console.log("가공되서온 puuid 값", processedData.puuid);
-            const matchIdUrl = `${this.riotMatchUrl.replace('{puuid}', processedData.puuid)}/ids?start=0&count=20`;
+            const matchIdUrl = `${this.riotMatchUrl.replace('{puuid}', processedData.puuid)}&start=0&count=20`;
             console.log("매치 ID를 가져오는 URL", matchIdUrl);
             const matchIdResponse = await this.httpService
                 .get(matchIdUrl, { headers: { 'X-Riot-Token': apiKey } })
