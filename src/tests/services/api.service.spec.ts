@@ -19,8 +19,10 @@ describe('ApiService', () => {
     const data = await service.search(nickname);
     console.log('개인정보 확인============', data);
 
-    expect(data).toBeDefined(); //데이터가 undefined인지 아닌지 확인해서 API호출이 성공했는지 확인
-    expect(data).toHaveProperty('name', 'BT102030'); //data라는 객체가 name 속성을 가지고 있고 그 값이 nickname 에 할당한 값인지 가정하는 것.
+    //데이터가 undefined인지 아닌지 확인해서 API호출이 성공했는지 확인
+    expect(data).toBeDefined();
+    //data라는 객체가 name 속성을 가지고 있고 그 값이 nickname 에 할당한 값인지 가정하는 것.
+    expect(data).toHaveProperty('name', 'BT102030');
   });
 
   // 이건 테스트 도중 예상치 못한 에러가 발생했다 가정
