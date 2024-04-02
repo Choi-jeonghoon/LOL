@@ -1,29 +1,53 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import * as dotenv from 'dotenv';
+import { ProcessService } from './process.service';
 
 @Injectable()
 export class ApiService {
-  private readonly riotApiUrl: string;
+  private readonly riotIdApiUrl: string;
+  private readonly riotMatchUrl: string;
   private readonly riotApiKey: string;
 
-  constructor(private readonly httpService: HttpService) {
-    dotenv.config(); // .env 파일 로드
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly processService: ProcessService,
+  ) {
 
-    this.riotApiUrl = process.env.RIOT_ID_URL;
+    this.riotIdApiUrl = process.env.RIOT_ID_URL;
+    this.riotMatchUrl = process.env.RIOT_MATCH_URL;
     this.riotApiKey = process.env.RIOT_API_KEY;
   }
 
   async search(nickname: string): Promise<object> {
-    const apiUrl = `${this.riotApiUrl}${nickname}`;
+    const apiUrl = `${this.riotIdApiUrl}${nickname}`;
     const apiKey = this.riotApiKey;
 
     try {
-      const response = await this.httpService
+      const infoData = await this.httpService
         .get(apiUrl, { headers: { 'X-Riot-Token': apiKey } })
         .toPromise();
-      return response.data;
+      console.log("service", infoData.data);
+
+      const processedData = await this.processService.infoProcess(infoData.data);
+      console.log("가공되서온 ID 값", processedData.id);
+      console.log("가공되서온 puuid 값", processedData.puuid);
+
+      // 매치 ID를 가져오는 URL 구성
+      const matchIdUrl = `${this.riotMatchUrl.replace('{puuid}', processedData.puuid)}/ids?start=0&count=20`;
+
+
+
+      console.log("매치 ID를 가져오는 URL", matchIdUrl);
+
+      // 매치 정보 가져오기
+      const matchIdResponse = await this.httpService
+        .get(matchIdUrl, { headers: { 'X-Riot-Token': apiKey } })
+        .toPromise();
+
+      // 매치 정보 데이터 반환
+      return matchIdResponse.data;
     } catch (error) {
+      // API 호출 중 에러가 발생하면 적절한 오류 메시지를 던집니다.
       throw new Error('API 호출 중 오류가 발생했습니다.');
     }
   }
@@ -32,15 +56,3 @@ export class ApiService {
     throw new Error('에러임');
   }
 }
-/**
- * @TODO
- * 1. API 키 발급받고 .env 작성
- * 2. 환경변수 api.service.ts 에서 불러오기
- * 3. 닉네임 검색하는 로직 작성
- * 4. 컨트롤러 작성하기 전에 TDD 방식이니 테스트코드 먼저 작성
- * 5. 올 패스 받으면 컨트롤러 작성
- * 6. POSTMAN으로 최종 테스트
- *
- * 7. 그러고 나서 process.service 작성
- * ~~ 반복
- */

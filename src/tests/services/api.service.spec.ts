@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiService } from '../../services/api.service';
-import { HttpModule } from '@nestjs/axios'; //외부 API를 사용 하기위해서 추가 설치했다.
+import { ProcessService } from '../../services/process.service'; // ProcessService 추가
+import { HttpModule } from '@nestjs/axios';
 
 describe('ApiService', () => {
   let service: ApiService;
@@ -8,7 +9,7 @@ describe('ApiService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [HttpModule],
-      providers: [ApiService],
+      providers: [ApiService, ProcessService], // ProcessService 추가
     }).compile();
 
     service = module.get<ApiService>(ApiService);
