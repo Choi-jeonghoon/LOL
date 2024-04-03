@@ -37,7 +37,7 @@ describe('process.service.spec', () => {
   it('TEST1', async () => {
     const result = await service.getMatchHistoryExcludeAlphabet('BT102030');
 
-    console.log("spec", result);
+    console.log('spec', result);
 
     expect(result).toBeDefined();
     expect(result).toBeInstanceOf(Array<string>);

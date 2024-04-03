@@ -20,7 +20,7 @@ let ProcessService = class ProcessService {
         try {
             const userInfo = await this.apiService.getUserInfo(nickname);
             const matchInfo = await this.apiService.getMatchInfo(userInfo.puuid);
-            console.log("매칭된 게임의 ID", matchInfo);
+            console.log('매칭된 게임의 ID', matchInfo);
             const matchDataPromises = matchInfo.map(async (matchId) => {
                 const matchData = await this.apiService.getMatchDataInfos(matchId);
                 return this.extractMatchData(matchData.data);
@@ -29,7 +29,7 @@ let ProcessService = class ProcessService {
             return matchDatas;
         }
         catch (error) {
-            console.error("Error occurred:", error);
+            console.error('Error occurred:', error);
             throw error;
         }
     }
@@ -51,23 +51,25 @@ let ProcessService = class ProcessService {
             participants: [],
             teams: [],
         };
-        console.log("매칭된 게임정보", extractedData);
-        extractedData.participants = data.info.participants.map(participant => ({
+        console.log('매칭된 게임정보', extractedData);
+        extractedData.participants = data.info.participants.map((participant) => ({
             teamId: participant.teamId,
             summonerId: participant.summonerId,
             summonerName: participant.summonerName,
             summoner1Id: participant.summoner1Id,
             summoner2Id: participant.summoner2Id,
-            teamPosition: participant.teamPosition === 'UTILITY' ? 'SUPPORT' : participant.teamPosition,
+            teamPosition: participant.teamPosition === 'UTILITY'
+                ? 'SUPPORT'
+                : participant.teamPosition,
             championId: participant.championId,
-            "items": [
+            items: [
                 participant.item0,
                 participant.item1,
                 participant.item2,
                 participant.item3,
                 participant.item4,
                 participant.item5,
-                participant.item6
+                participant.item6,
             ],
             kills: participant.kills,
             deaths: participant.deaths,
@@ -76,8 +78,8 @@ let ProcessService = class ProcessService {
             neutralMinionsKilled: participant.neutralMinionsKilled,
             totalMinionsKilled: participant.totalMinionsKilled,
         }));
-        console.log("매칭된 각 유저들 정보", extractedData.participants);
-        extractedData.teams = data.info.teams.map(team => ({
+        console.log('매칭된 각 유저들 정보', extractedData.participants);
+        extractedData.teams = data.info.teams.map((team) => ({
             teamId: team.teamId,
             firstBlood: team.objectives.champion.first,
             firstTower: team.objectives.tower.first,
@@ -86,9 +88,11 @@ let ProcessService = class ProcessService {
             firstDragon: team.objectives.dragon.first,
             firstRiftHerald: team.objectives.riftHerald.first,
             win: team.win,
-            bans: team.bans.map((ban) => ban.championId).filter((championId) => championId !== -1),
+            bans: team.bans
+                .map((ban) => ban.championId)
+                .filter((championId) => championId !== -1),
         }));
-        console.log("경기 승자 확인 및 벤 정보", extractedData.teams);
+        console.log('경기 승자 확인 및 벤 정보', extractedData.teams);
         return extractedData;
     }
 };
