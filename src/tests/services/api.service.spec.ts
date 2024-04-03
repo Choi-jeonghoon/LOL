@@ -62,4 +62,13 @@ describe('api.service.spec', () => {
         expect(result).toBeDefined();//값이 존재하는지 확인
         expect(typeof result).toBe('object');//변수 타입이 객체인지 확인
     });
+
+
+    it('should return matchGame info', async () => {
+        const result = await service.getMatchDataInfos('KR_6919883975');
+        console.log("매치된게임 정보", result);
+
+        expect(result).toBeDefined();//값이 존재하는지 확인
+        expect(typeof result).toBe('object');//변수 타입이 객체인지 확인
+    });
 });

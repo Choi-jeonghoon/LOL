@@ -18,9 +18,16 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [axios_1.HttpModule, config_1.ConfigModule.forRoot({ isGlobal: true })],
+        imports: [
+            axios_1.HttpModule,
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: ['.env'],
+                cache: true,
+            }),
+        ],
         controllers: [api_controllet_1.MainController],
-        providers: [api_service_1.ApiService, process_service_1.ProcessService, config_1.ConfigService],
+        providers: [api_service_1.ApiService, process_service_1.ProcessService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

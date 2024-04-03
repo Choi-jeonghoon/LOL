@@ -1,6 +1,6 @@
-import { ApiService } from "src/services/api.service";
+import { ProcessService } from 'src/services/process.service';
 export declare class MainController {
-    private readonly apiService;
-    constructor(apiService: ApiService);
-    getUserInfo(nickname: string): Promise<object>;
+    private readonly processService;
+    constructor(processService: ProcessService);
+    getMatchInfoNumbers(nickname: string): Promise<object>;
 }

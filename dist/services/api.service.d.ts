@@ -1,11 +1,15 @@
 import { HttpService } from '@nestjs/axios';
-import { ProcessService } from './process.service';
 import { ConfigService } from '@nestjs/config';
 export declare class ApiService {
     private readonly httpService;
-    private readonly processService;
     private readonly configService;
-    constructor(httpService: HttpService, processService: ProcessService, configService: ConfigService);
-    search(nickname: string): Promise<object>;
-    beError(): Promise<any>;
+    private userApiUrl;
+    private matchApiUrl;
+    private matchApitInfoUrl;
+    private apiKey;
+    constructor(httpService: HttpService, configService: ConfigService);
+    getUserInfo(nickname: string): Promise<any>;
+    getMatchInfo(puuid: string): Promise<any>;
+    getMatchDataInfos(matchId: string): Promise<import("axios").AxiosResponse<any, any>>;
+    private APIRequest;
 }

@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 export class ApiService {
   private userApiUrl: string;
   private matchApiUrl: string;
+  private matchApitInfoUrl: string;
   private apiKey: string;
 
   constructor(
@@ -14,6 +15,10 @@ export class ApiService {
   ) {
     this.userApiUrl = this.configService.get<string>('RIOT_API_USER');
     this.matchApiUrl = this.configService.get<string>('RIOT_API_MATCH');
+    this.matchApitInfoUrl = this.configService.get<string>('RIOT_API_MATCH_INFO')
+
+
+
     this.apiKey = this.configService.get<string>('RIOT_API_KEY');
   }
 
@@ -32,6 +37,13 @@ export class ApiService {
 
     return matchInfo.data;
   }
+
+  //많은 매치 정보 게임들의 모든 정보 가져오기
+  async getMatchDataInfos(matchId: string) {
+    const MatchDatainfo = await this.APIRequest(`${this.matchApitInfoUrl}${matchId}`);
+    return MatchDatainfo
+  }
+
 
   // API Service 내에서만 재사용할 지역함수
   private async APIRequest(URL: string) {

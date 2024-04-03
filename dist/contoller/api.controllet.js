@@ -14,21 +14,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MainController = void 0;
 const common_1 = require("@nestjs/common");
-const api_service_1 = require("../services/api.service");
+const process_service_1 = require("../services/process.service");
 let MainController = class MainController {
-    constructor(apiService) {
-        this.apiService = apiService;
+    constructor(processService) {
+        this.processService = processService;
     }
-    async getUserInfo(nickname) {
-        try {
-            const infoData = await this.apiService.search(nickname);
-            console.log("test========================", infoData);
-            return infoData;
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('사용자 정보를 가져오는 중에 오류가 발생했습니다.');
-        }
+    async getMatchInfoNumbers(nickname) {
+        const result = this.processService.getMatchHistoryExcludeAlphabet(nickname);
+        return result;
     }
 };
 exports.MainController = MainController;
@@ -38,9 +31,9 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], MainController.prototype, "getUserInfo", null);
+], MainController.prototype, "getMatchInfoNumbers", null);
 exports.MainController = MainController = __decorate([
     (0, common_1.Controller)('/'),
-    __metadata("design:paramtypes", [api_service_1.ApiService])
+    __metadata("design:paramtypes", [process_service_1.ProcessService])
 ], MainController);
 //# sourceMappingURL=api.controllet.js.map
