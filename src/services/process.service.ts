@@ -5,7 +5,7 @@ import Utils from '../utils/utils';
 
 @Injectable()
 export class ProcessService {
-  constructor(private readonly apiService: ApiService) { }
+  constructor(private readonly apiService: ApiService) {}
 
   async getMatchHistoryExcludeAlphabet(nickname: string): Promise<DataType[]> {
     try {
@@ -14,7 +14,8 @@ export class ProcessService {
       //console.log('큐 잡힌 방 matchId', matchInfo);
 
       const matchDataPromises = matchInfo.map(async (matchId: string) => {
-        const matchDataResponse = await this.apiService.getMatchDataInfos(matchId);
+        const matchDataResponse =
+          await this.apiService.getMatchDataInfos(matchId);
         const matchData = matchDataResponse.data; // AxiosResponse 객체의 data 프로퍼티로부터 데이터 추출
         //console.log("데이터확인", matchData)
         return this.extractMatchData(nickname, matchData);
@@ -34,8 +35,10 @@ export class ProcessService {
     }
   }
 
-
-  private extractMatchData(nickname: string, matchData: MatchDataType): DataType {
+  private extractMatchData(
+    nickname: string,
+    matchData: MatchDataType,
+  ): DataType {
     // matchData.metadata가 null 또는 undefined인지 확인합니다.
     if (!matchData.metadata) {
       throw new Error('Metadata is missing in match data.');
@@ -51,48 +54,51 @@ export class ProcessService {
           participants: matchData.metadata.participants,
         },
         info: {
-          gameCreation: Utils.convertTimestampToDate(Number(matchData.info.gameCreation)),
-          gameEndTimestamp: Utils.convertTimestampToDate(Number(matchData.info.gameEndTimestamp)),
-          gameDuration: Utils.convertSecondsToTimeString(Number(matchData.info.gameDuration)),
+          gameCreation: Utils.convertTimestampToDate(
+            Number(matchData.info.gameCreation),
+          ),
+          gameEndTimestamp: Utils.convertTimestampToDate(
+            Number(matchData.info.gameEndTimestamp),
+          ),
+          gameDuration: Utils.convertSecondsToTimeString(
+            Number(matchData.info.gameDuration),
+          ),
           gameId: matchData.info.gameId,
           gameMode: matchData.info.gameMode,
           gameName: matchData.info.gameName,
           gameStartTimestamp: matchData.info.gameStartTimestamp,
           gameType: matchData.info.gameType,
           // participants: matchData.info.participants
-          participants: matchData.info.participants.map((participant: ParticipantType) => ({
-            teamId: participant.teamId,
-            puuid: participant.puuid,
-            summonerId: participant.summonerId,
-            summonerLevel: participant.summonerLevel,
-            summonerName: participant.summonerName,
-            championName: participant.championName,
-            championId: participant.championId,
-            lane: participant.lane,
-            teamPosition: participant.teamPosition,
-            goldEarned: participant.goldEarned,
-            assists: participant.assists,
-            deaths: participant.deaths,
-            kills: participant.kills,
-            item0: participant.item0,
-            item1: participant.item1,
-            item2: participant.item2,
-            item3: participant.item3,
-            item4: participant.item4,
-            item5: participant.item5,
-            item6: participant.item6
-          }))
-
+          participants: matchData.info.participants.map(
+            (participant: ParticipantType) => ({
+              teamId: participant.teamId,
+              puuid: participant.puuid,
+              summonerId: participant.summonerId,
+              summonerLevel: participant.summonerLevel,
+              summonerName: participant.summonerName,
+              championName: participant.championName,
+              championId: participant.championId,
+              lane: participant.lane,
+              teamPosition: participant.teamPosition,
+              goldEarned: participant.goldEarned,
+              assists: participant.assists,
+              deaths: participant.deaths,
+              kills: participant.kills,
+              item0: participant.item0,
+              item1: participant.item1,
+              item2: participant.item2,
+              item3: participant.item3,
+              item4: participant.item4,
+              item5: participant.item5,
+              item6: participant.item6,
+            }),
+          ),
         },
-
       },
-
     };
-    console.log("가공된 데이터", extractedData);
+    console.log('가공된 데이터', extractedData);
     //console.log(JSON.stringify(extractedData)); //JSON 형식으로 원본그대로 보고싶으면 이렇게한다.
 
     return extractedData;
-
-
   }
 }
