@@ -27,7 +27,7 @@ let ApiService = class ApiService {
         return userInfo.data;
     }
     async getMatchInfo(puuid) {
-        const matchInfo = await this.APIRequest(`${this.matchApiUrl.replace('%variable%', puuid)}`);
+        const matchInfo = await this.APIRequest(`${this.matchApiUrl.replace('{puuid}', puuid)}`);
         return matchInfo.data;
     }
     async getMatchDataInfos(matchId) {

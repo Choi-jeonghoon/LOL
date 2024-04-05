@@ -32,7 +32,7 @@ export class ApiService {
   // 매치 정보 가져오기
   async getMatchInfo(puuid: string) {
     const matchInfo = await this.APIRequest(
-      `${this.matchApiUrl.replace('%variable%', puuid)}`,
+      `${this.matchApiUrl.replace('{puuid}', puuid)}`,
     );
 
     return matchInfo.data;
