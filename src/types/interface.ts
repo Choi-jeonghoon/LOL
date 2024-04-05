@@ -3,17 +3,16 @@ export interface DataType {
     matchData: MatchDataType;
 }
 
+
 export interface MatchDataType {
-    metadata: MatchDataType2;
+    metadata: {
+        matchId: string;
+        dataVersion: string;
+        participants: string[];
+    }
     info: InfoDataType;
 }
 
-export interface MatchDataType2 {
-    dataVersion: string;
-    matchId: string;
-    participants: string[];
-
-}
 export interface InfoDataType {
     gameCreation: string;
     gameEndTimestamp: string;
@@ -24,8 +23,10 @@ export interface InfoDataType {
     gameStartTimestamp: number;
     gameType: string;
     participants: ParticipantType[];
+    platformId: string;
+    queueId: number
+    teams: TeamType[]
 }
-
 
 export interface ParticipantType {
     teamId: number;
@@ -48,10 +49,52 @@ export interface ParticipantType {
     item4: number;
     item5: number;
     item6: number;
+    challenges?: ChallengesType;
 
 }
-
-export interface challengesType {
+export interface ChallengesType {
     kda: number;
-
 }
+
+export interface TeamType {
+    bans: BanType[]
+    teamId: number;
+    win: string;
+    objectives: {
+        baron: {
+            first: boolean;
+            kills: number;
+        };
+        champion: {
+            first: boolean;
+            kills: number;
+        };
+        dragon: {
+            first: boolean;
+            kills: number;
+        };
+        // horde: {
+        //     first: boolean;
+        //     kills: number;
+        // };
+        // inhibitor: {
+        //     first: boolean;
+        //     kills: number;
+        // };
+        // riftHerald: {
+        //     first: boolean;
+        //     kills: number;
+        // };
+        // tower: {
+        //     first: boolean;
+        //     kills: number;
+        // };
+    }
+}
+
+export interface BanType {
+    championId: number;
+    pickTurn: number;
+}
+
+

@@ -42,8 +42,8 @@ let ProcessService = class ProcessService {
             nickname,
             matchData: {
                 metadata: {
-                    dataVersion: matchData.metadata.dataVersion,
                     matchId: matchData.metadata.matchId,
+                    dataVersion: matchData.metadata.dataVersion,
                     participants: matchData.metadata.participants,
                 },
                 info: {
@@ -69,18 +69,40 @@ let ProcessService = class ProcessService {
                         assists: participant.assists,
                         deaths: participant.deaths,
                         kills: participant.kills,
+                        kda: participant.challenges.kda,
                         item0: participant.item0,
                         item1: participant.item1,
                         item2: participant.item2,
                         item3: participant.item3,
                         item4: participant.item4,
                         item5: participant.item5,
-                        item6: participant.item6
+                        item6: participant.item6,
+                    })),
+                    platformId: matchData.info.platformId,
+                    queueId: matchData.info.queueId,
+                    teams: matchData.info.teams.map((team) => ({
+                        teamId: team.teamId,
+                        win: team.win,
+                        bans: team.bans.map((ban) => ({ championId: ban.championId, pickTurn: ban.pickTurn })),
+                        objectives: {
+                            baron: {
+                                first: team.objectives.baron.first,
+                                kills: team.objectives.baron.kills
+                            },
+                            champion: {
+                                first: team.objectives.champion.first,
+                                kills: team.objectives.champion.kills
+                            },
+                            dragon: {
+                                first: team.objectives.champion.first,
+                                kills: team.objectives.champion.kills
+                            }
+                        }
                     }))
                 },
             },
         };
-        console.log("가공된 데이터", extractedData);
+        console.log('가공된 데이터', extractedData);
         return extractedData;
     }
 };

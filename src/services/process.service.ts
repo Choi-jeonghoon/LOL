@@ -5,7 +5,7 @@ import Utils from '../utils/utils';
 
 @Injectable()
 export class ProcessService {
-  constructor(private readonly apiService: ApiService) {}
+  constructor(private readonly apiService: ApiService) { }
 
   async getMatchHistoryExcludeAlphabet(nickname: string): Promise<DataType[]> {
     try {
@@ -49,8 +49,8 @@ export class ProcessService {
       nickname,
       matchData: {
         metadata: {
-          dataVersion: matchData.metadata.dataVersion,
           matchId: matchData.metadata.matchId,
+          dataVersion: matchData.metadata.dataVersion,
           participants: matchData.metadata.participants,
         },
         info: {
@@ -68,7 +68,6 @@ export class ProcessService {
           gameName: matchData.info.gameName,
           gameStartTimestamp: matchData.info.gameStartTimestamp,
           gameType: matchData.info.gameType,
-          // participants: matchData.info.participants
           participants: matchData.info.participants.map(
             (participant: ParticipantType) => ({
               teamId: participant.teamId,
@@ -84,6 +83,7 @@ export class ProcessService {
               assists: participant.assists,
               deaths: participant.deaths,
               kills: participant.kills,
+              kda: participant.challenges.kda,
               item0: participant.item0,
               item1: participant.item1,
               item2: participant.item2,
@@ -93,6 +93,34 @@ export class ProcessService {
               item6: participant.item6,
             }),
           ),
+          platformId: matchData.info.platformId,
+          queueId: matchData.info.queueId,
+          teams: matchData.info.teams.map((team) => ({
+            //팀은 100  / 200  으로 두팀 존재
+            teamId: team.teamId,
+            //true 는 승자 false 는 패자
+            win: team.win,
+            //전부 뽑아도되는 경우
+            //bans: team.bans,
+            //ban 정보중 필요한것들만 뽑을려고하는경우
+            bans: team.bans.map((ban) => ({ championId: ban.championId, pickTurn: ban.pickTurn })),
+            // objectives: team.objectives,
+            objectives: {
+              baron: {
+                first: team.objectives.baron.first,
+                kills: team.objectives.baron.kills
+              },
+              champion: {
+                first: team.objectives.champion.first,
+                kills: team.objectives.champion.kills
+              },
+              dragon: {
+                first: team.objectives.champion.first,
+                kills: team.objectives.champion.kills
+              }
+            }
+
+          }))
         },
       },
     };

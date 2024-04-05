@@ -26,7 +26,7 @@ let MainController = class MainController {
 };
 exports.MainController = MainController;
 __decorate([
-    (0, common_1.Get)('/'),
+    (0, common_1.Get)('/serch'),
     __param(0, (0, common_1.Query)('nickname')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
