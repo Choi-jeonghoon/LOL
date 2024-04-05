@@ -21,13 +21,11 @@ let ProcessService = class ProcessService {
         try {
             const userInfo = await this.apiService.getUserInfo(nickname);
             const matchInfo = await this.apiService.getMatchInfo(userInfo.puuid);
-            const matchDataPromises = matchInfo.map(async (matchId) => {
-                const matchDataResponse = await this.apiService.getMatchDataInfos(matchId);
-                const matchData = matchDataResponse.data;
+            const matchDataPromises = await Promise.all(matchInfo.map(async (matchId) => {
+                const { data: matchData } = await this.apiService.getMatchDataInfos(matchId);
                 return this.extractMatchData(nickname, matchData);
-            });
-            const matchDatas = await Promise.all(matchDataPromises);
-            return matchDatas;
+            }));
+            return matchDataPromises;
         }
         catch (error) {
             console.error('Error occurred:', error);
@@ -38,72 +36,59 @@ let ProcessService = class ProcessService {
         if (!matchData.metadata) {
             throw new Error('Metadata is missing in match data.');
         }
-        const extractedData = {
+        const { info: { gameCreation, gameEndTimestamp, gameDuration, gameId, gameMode, gameName, gameStartTimestamp, gameType, platformId, queueId, participants, teams } } = matchData;
+        const mappedTeams = teams.map(({ teamId, win, bans, objectives }) => ({
+            teamId,
+            win,
+            bans: bans.map(({ championId, pickTurn }) => ({ championId, pickTurn })),
+            objectives: {
+                baron: { ...objectives.baron },
+                champion: { ...objectives.champion },
+                dragon: { ...objectives.dragon },
+            },
+        }));
+        return {
             nickname,
             matchData: {
-                metadata: {
-                    matchId: matchData.metadata.matchId,
-                    dataVersion: matchData.metadata.dataVersion,
-                    participants: matchData.metadata.participants,
-                },
+                metadata: { ...matchData.metadata },
                 info: {
-                    gameCreation: utils_1.default.convertTimestampToDate(Number(matchData.info.gameCreation)),
-                    gameEndTimestamp: utils_1.default.convertTimestampToDate(Number(matchData.info.gameEndTimestamp)),
-                    gameDuration: utils_1.default.convertSecondsToTimeString(Number(matchData.info.gameDuration)),
-                    gameId: matchData.info.gameId,
-                    gameMode: matchData.info.gameMode,
-                    gameName: matchData.info.gameName,
-                    gameStartTimestamp: matchData.info.gameStartTimestamp,
-                    gameType: matchData.info.gameType,
-                    participants: matchData.info.participants.map((participant) => ({
-                        teamId: participant.teamId,
-                        puuid: participant.puuid,
-                        summonerId: participant.summonerId,
-                        summonerLevel: participant.summonerLevel,
-                        summonerName: participant.summonerName,
-                        championName: participant.championName,
-                        championId: participant.championId,
-                        lane: participant.lane,
-                        teamPosition: participant.teamPosition,
-                        goldEarned: participant.goldEarned,
-                        assists: participant.assists,
-                        deaths: participant.deaths,
-                        kills: participant.kills,
-                        kda: participant.challenges.kda,
-                        item0: participant.item0,
-                        item1: participant.item1,
-                        item2: participant.item2,
-                        item3: participant.item3,
-                        item4: participant.item4,
-                        item5: participant.item5,
-                        item6: participant.item6,
+                    gameCreation: utils_1.default.convertTimestampToDate(Number(gameCreation)),
+                    gameEndTimestamp: utils_1.default.convertTimestampToDate(Number(gameEndTimestamp)),
+                    gameDuration: utils_1.default.convertSecondsToTimeString(Number(gameDuration)),
+                    gameId,
+                    gameMode,
+                    gameName,
+                    gameStartTimestamp,
+                    gameType,
+                    platformId,
+                    queueId,
+                    participants: participants.map(({ teamId, puuid, summonerId, summonerLevel, summonerName, championName, championId, lane, teamPosition, goldEarned, assists, deaths, kills, challenges, item0, item1, item2, item3, item4, item5, item6 }) => ({
+                        teamId,
+                        puuid,
+                        summonerId,
+                        summonerLevel,
+                        summonerName,
+                        championName,
+                        championId,
+                        lane,
+                        teamPosition,
+                        goldEarned,
+                        assists,
+                        deaths,
+                        kills,
+                        kda: challenges.kda,
+                        item0,
+                        item1,
+                        item2,
+                        item3,
+                        item4,
+                        item5,
+                        item6,
                     })),
-                    platformId: matchData.info.platformId,
-                    queueId: matchData.info.queueId,
-                    teams: matchData.info.teams.map((team) => ({
-                        teamId: team.teamId,
-                        win: team.win,
-                        bans: team.bans.map((ban) => ({ championId: ban.championId, pickTurn: ban.pickTurn })),
-                        objectives: {
-                            baron: {
-                                first: team.objectives.baron.first,
-                                kills: team.objectives.baron.kills
-                            },
-                            champion: {
-                                first: team.objectives.champion.first,
-                                kills: team.objectives.champion.kills
-                            },
-                            dragon: {
-                                first: team.objectives.champion.first,
-                                kills: team.objectives.champion.kills
-                            }
-                        }
-                    }))
+                    teams: mappedTeams,
                 },
             },
         };
-        console.log('가공된 데이터', extractedData);
-        return extractedData;
     }
 };
 exports.ProcessService = ProcessService;

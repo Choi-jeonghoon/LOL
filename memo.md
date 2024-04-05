@@ -68,3 +68,212 @@ private extractMatchData(
         },
       },
     };
+
+
+
+
+
+
+
+    ////////////////////////process.service.ts 코드를 구조분해할당으로 작업한 경우
+    import { Injectable } from '@nestjs/common';
+import { ApiService } from './api.service';
+import { DataType, MatchDataType, ParticipantType, TeamType, BanType } from '../types/interface';
+import Utils from '../utils/utils';
+
+@Injectable()
+export class ProcessService {
+  constructor(private readonly apiService: ApiService) { }
+
+  async getMatchHistoryExcludeAlphabet(nickname: string): Promise<DataType[]> {
+    try {
+      const userInfo = await this.apiService.getUserInfo(nickname);
+      const matchInfo = await this.apiService.getMatchInfo(userInfo.puuid);
+
+      const matchDataPromises = await Promise.all(matchInfo.map(async (matchId: string) => {
+        const { data: matchData } = await this.apiService.getMatchDataInfos(matchId);
+        return this.extractMatchData(nickname, matchData);
+      }));
+
+      return matchDataPromises;
+    } catch (error) {
+      console.error('Error occurred:', error);
+      throw error;
+    }
+  }
+
+  private extractMatchData(
+    nickname: string,
+    matchData: MatchDataType,
+  ): DataType {
+    if (!matchData.metadata) {
+      throw new Error('Metadata is missing in match data.');
+    }
+
+    const { gameCreation, gameEndTimestamp, gameDuration, gameId, gameMode, gameName, gameStartTimestamp, gameType, platformId, queueId, teams } = matchData.info;
+
+    const participants = matchData.info.participants.map(({ teamId, puuid, summonerId, summonerLevel, summonerName, championName, championId, lane, teamPosition, goldEarned, assists, deaths, kills, challenges, item0, item1, item2, item3, item4, item5, item6 }) => ({
+      teamId,
+      puuid,
+      summonerId,
+      summonerLevel,
+      summonerName,
+      championName,
+      championId,
+      lane,
+      teamPosition,
+      goldEarned,
+      assists,
+      deaths,
+      kills,
+      kda: challenges.kda,
+      item0,
+      item1,
+      item2,
+      item3,
+      item4,
+      item5,
+      item6,
+    }));
+    const mappedTeams = teams.map(({ teamId, win, bans, objectives }) => ({
+      teamId,
+      win,
+      bans: bans.map(({ championId, pickTurn }) => ({ championId, pickTurn })),
+      objectives: {
+        baron: {
+          first: objectives.baron.first,
+          kills: objectives.baron.kills,
+        },
+        champion: {
+          first: objectives.champion.first,
+          kills: objectives.champion.kills,
+        },
+        dragon: {
+          first: objectives.champion.first,
+          kills: objectives.champion.kills,
+        },
+      },
+    }));
+
+
+    const extractedData: DataType = {
+      nickname,
+      matchData: {
+        metadata: {
+          matchId: matchData.metadata.matchId,
+          dataVersion: matchData.metadata.dataVersion,
+          participants: matchData.metadata.participants,
+        },
+        info: {
+          gameCreation: Utils.convertTimestampToDate(Number(gameCreation)),
+          gameEndTimestamp: Utils.convertTimestampToDate(Number(gameEndTimestamp)),
+          gameDuration: Utils.convertSecondsToTimeString(Number(gameDuration)),
+          gameId,
+          gameMode,
+          gameName,
+          gameStartTimestamp,
+          gameType,
+          platformId,
+          queueId,
+          participants,
+          teams: mappedTeams,
+        },
+      },
+    };
+
+
+    return extractedData;
+  }
+}
+
+
+
+//////////////////람다 함수 + 객채분해(구조분해)를 이용한경우
+import { Injectable } from '@nestjs/common';
+import { ApiService } from './api.service';
+import { DataType, MatchDataType } from '../types/interface';
+import Utils from '../utils/utils';
+
+@Injectable()
+export class ProcessService {
+  constructor(private readonly apiService: ApiService) { }
+
+  async getMatchHistoryExcludeAlphabet(nickname: string): Promise<DataType[]> {
+    try {
+      const userInfo = await this.apiService.getUserInfo(nickname);
+      const matchInfo = await this.apiService.getMatchInfo(userInfo.puuid);
+
+      const matchDataPromises = await Promise.all(matchInfo.map(async (matchId: string) => {
+        const { data: matchData } = await this.apiService.getMatchDataInfos(matchId);
+        return this.extractMatchData(nickname, matchData);
+      }));
+
+      return matchDataPromises;
+    } catch (error) {
+      console.error('Error occurred:', error);
+      throw error;
+    }
+  }
+
+  private extractMatchData(nickname: string, matchData: MatchDataType): DataType {
+    if (!matchData.metadata) {
+      throw new Error('Metadata is missing in match data.');
+    }
+
+    const { info: { gameCreation, gameEndTimestamp, gameDuration, gameId, gameMode, gameName, gameStartTimestamp, gameType, platformId, queueId, participants, teams } } = matchData;
+
+    const mappedTeams = teams.map(({ teamId, win, bans, objectives }) => ({
+      teamId,
+      win,
+      bans: bans.map(({ championId, pickTurn }) => ({ championId, pickTurn })),
+      objectives: {
+        baron: { ...objectives.baron },
+        champion: { ...objectives.champion },
+        dragon: { ...objectives.dragon },
+      },
+    }));
+
+    return {
+      nickname,
+      matchData: {
+        metadata: { ...matchData.metadata },
+        info: {
+          gameCreation: Utils.convertTimestampToDate(Number(gameCreation)),
+          gameEndTimestamp: Utils.convertTimestampToDate(Number(gameEndTimestamp)),
+          gameDuration: Utils.convertSecondsToTimeString(Number(gameDuration)),
+          gameId,
+          gameMode,
+          gameName,
+          gameStartTimestamp,
+          gameType,
+          platformId,
+          queueId,
+          participants: participants.map(({ teamId, puuid, summonerId, summonerLevel, summonerName, championName, championId, lane, teamPosition, goldEarned, assists, deaths, kills, challenges, item0, item1, item2, item3, item4, item5, item6 }) => ({
+            teamId,
+            puuid,
+            summonerId,
+            summonerLevel,
+            summonerName,
+            championName,
+            championId,
+            lane,
+            teamPosition,
+            goldEarned,
+            assists,
+            deaths,
+            kills,
+            kda: challenges.kda,
+            item0,
+            item1,
+            item2,
+            item3,
+            item4,
+            item5,
+            item6,
+          })),
+          teams: mappedTeams,
+        },
+      },
+    };
+  }
+}
