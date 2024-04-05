@@ -7,7 +7,6 @@ participants 안에 있는 게임에 참여한 유저의 암호와 ID array
 export interface MatchDataType {
     matchId: string;
     dataVersion: string;
-    // participants를 여기에서 제거합니다.
     info: InfoDataType;
 }
 또한 데이터를 추출하는 곳에서도 관련해서 뎁스바꿔줘야된다
